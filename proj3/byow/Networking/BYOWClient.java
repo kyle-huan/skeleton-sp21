@@ -86,7 +86,8 @@ public class BYOWClient {
                 StdDraw.setXscale(0, width);
                 StdDraw.setYscale(0, height);
                 StdDraw.clear(new Color(0, 0, 0));
-                StdDraw.enableDoubleBuffering();
+//                StdDraw.enableDoubleBuffering();
+                edu.princeton.cs.algs4.StdDraw.enableDoubleBuffering();
                 StdDraw.show();
             }
 

@@ -51,7 +51,8 @@ public class MemoryGame {
         StdDraw.setXscale(0, this.width);
         StdDraw.setYscale(0, this.height);
         StdDraw.clear(Color.BLACK);
-        StdDraw.enableDoubleBuffering();
+        edu.princeton.cs.algs4.StdDraw.enableDoubleBuffering();
+//        StdDraw.enableDoubleBuffering();
 
         //TODO: Initialize random number generator
     }

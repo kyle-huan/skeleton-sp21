@@ -1,7 +1,8 @@
 package byow.TileEngine;
 
-import edu.princeton.cs.introcs.StdDraw;
-
+//import edu.princeton.cs.introcs.StdDraw;
+//import edu.princeton.cs.algs4.*;
+import edu.princeton.cs.introcs.*;
 import java.awt.Color;
 import java.awt.Font;
 
@@ -40,7 +41,8 @@ public class TERenderer {
 
         StdDraw.clear(new Color(0, 0, 0));
 
-        StdDraw.enableDoubleBuffering();
+        edu.princeton.cs.algs4.StdDraw.enableDoubleBuffering();
+//        StdDraw.enableDoubleBuffering();
         StdDraw.show();
     }
 
