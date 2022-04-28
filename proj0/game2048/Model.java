@@ -1,11 +1,9 @@
 package game2048;
 
-import java.util.Formatter;
-import java.util.Observable;
-
+import java.util.*;
 
 /** The state of a game of 2048.
- *  @author TODO: YOUR NAME HERE
+ *  @author huan li
  */
 public class Model extends Observable {
     /** Current contents of the board. */
@@ -114,13 +112,49 @@ public class Model extends Observable {
         // for the tilt to the Side SIDE. If the board changed, set the
         // changed local variable to true.
 
-        // test for github
+        // Handle the up direction move
+        for (int c = 0; c < board.size(); c++) {
+            handleSingleColumn(board, c);
+        }
+        changed = true;
+        
         checkGameOver();
         if (changed) {
             setChanged();
         }
         return changed;
     }
+
+
+    private boolean handleSingleColumn(Board b, int c) {
+        Map<Integer, Tile> map = new HashMap<>();
+        for (int r = b.size() - 1; r >= 0; r--) {
+            if (b.tile(c, r) != null) {
+                map.put(r, b.tile(c, r));
+            }
+        }
+
+        for (int r = 0; r < b.size(); r++) {
+            if (map.keySet().contains(r)) {
+                int tempRow = r;
+                if (validCoordinate(b, c, tempRow + 1)) {
+                    while (b.tile(c, tempRow + 1) == null
+                        && tempRow + 1 < b.size()) {
+                        tempRow++;
+                    }
+                    // Tile at (c, tempRow + 1) is not null when reach here
+                    if (b.tile(c, tempRow + 1).value() == map.get(r).value()) {
+                        b.move(c, tempRow + 1, map.get(r));
+                        this.score += map.get(r).value();
+                    } else {
+                        b.move(c, tempRow, map.get(r));
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
 
     /** Checks if the game is over and sets the gameOver variable
      *  appropriately.
@@ -138,7 +172,13 @@ public class Model extends Observable {
      *  Empty spaces are stored as null.
      * */
     public static boolean emptySpaceExists(Board b) {
-        // TODO: Fill in this function.
+        for (int i = 0; i < b.size(); i++) {
+            for (int j = 0; j < b.size(); j++) {
+                if (b.tile(i, j) == null) {
+                    return true;
+                }
+            }
+        }
         return false;
     }
 
@@ -148,7 +188,13 @@ public class Model extends Observable {
      * given a Tile object t, we get its value with t.value().
      */
     public static boolean maxTileExists(Board b) {
-        // TODO: Fill in this function.
+        for (int i = 0; i < b.size(); i++) {
+            for (int j = 0; j < b.size(); j++) {
+                if (b.tile(i, j) != null && b.tile(i, j).value() == MAX_PIECE) {
+                    return true;
+                }
+            }
+        }
         return false;
     }
 
@@ -159,7 +205,43 @@ public class Model extends Observable {
      * 2. There are two adjacent tiles with the same value.
      */
     public static boolean atLeastOneMoveExists(Board b) {
-        // TODO: Fill in this function.
+        for (int i = 0; i < b.size(); i++) {
+            for (int j = 0; j < b.size(); j++) {
+                if (b.tile(i, j) == null) {
+                    return true;
+                }
+                if (validCoordinate(b, i + 1, j)
+                    && b.tile(i + 1, j) != null
+                    && b.tile(i + 1, j).value() == b.tile(i, j).value()) {
+                    return true;
+                }
+
+                if (validCoordinate(b, i - 1, j)
+                    && b.tile(i - 1, j) != null
+                    && b.tile(i - 1, j).value() == b.tile(i, j).value()) {
+                    return true;
+                }
+
+                if (validCoordinate(b, i, j + 1)
+                    && b.tile(i, j + 1) != null
+                    && b.tile(i, j + 1).value() == b.tile(i, j).value()) {
+                    return true;
+                }
+
+                if (validCoordinate(b, i, j - 1)
+                    && b.tile(i, j - 1) != null
+                    && b.tile(i, j - 1).value() == b.tile(i, j).value()) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private static boolean validCoordinate(Board b, int row, int col) {
+        if (row >= 0 && row < b.size() && col >= 0 && col < b.size()) {
+            return true;
+        }
         return false;
     }
 
