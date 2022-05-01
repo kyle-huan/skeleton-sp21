@@ -1,5 +1,7 @@
 package game2048;
 
+import edu.princeton.cs.algs4.In;
+
 import java.util.*;
 
 /** The state of a game of 2048.
@@ -22,6 +24,13 @@ public class Model extends Observable {
 
     /** Largest piece value. */
     public static final int MAX_PIECE = 2048;
+
+
+    public static boolean canMerge = false;
+
+
+
+
 
     /** A new 2048 game on a board of size SIZE with no pieces
      *  and score 0. */
@@ -114,7 +123,7 @@ public class Model extends Observable {
 
         // Handle the up direction move
         for (int c = 0; c < board.size(); c++) {
-            handleSingleColumn(board, c);
+            handleSingleColumn(board);
         }
         changed = true;
         
@@ -125,35 +134,85 @@ public class Model extends Observable {
         return changed;
     }
 
-
-    private boolean handleSingleColumn(Board b, int c) {
-        Map<Integer, Tile> map = new HashMap<>();
-        for (int r = b.size() - 1; r >= 0; r--) {
-            if (b.tile(c, r) != null) {
-                map.put(r, b.tile(c, r));
+    private void handleSingleColumn(Board b) {
+        for (int i = 0; i < b.size(); i++) {
+            LinkedList<Integer> thisColumn = new LinkedList<>();
+            for (int j = 0; j < b.size(); j++) {
+                if (tile(i, j) != null) {
+                    thisColumn.add(tile(i, j).value());
+                }
             }
-        }
-
-        for (int r = 0; r < b.size(); r++) {
-            if (map.keySet().contains(r)) {
-                int tempRow = r;
-                if (validCoordinate(b, c, tempRow + 1)) {
-                    while (b.tile(c, tempRow + 1) == null
-                        && tempRow + 1 < b.size()) {
-                        tempRow++;
-                    }
-                    // Tile at (c, tempRow + 1) is not null when reach here
-                    if (b.tile(c, tempRow + 1).value() == map.get(r).value()) {
-                        b.move(c, tempRow + 1, map.get(r));
-                        this.score += map.get(r).value();
-                    } else {
-                        b.move(c, tempRow, map.get(r));
-                    }
+            LinkedList<Integer> newColumn = new LinkedList<>();
+            while (newColumn.size() >= 2) {
+                int first = newColumn.pop();
+                int second = newColumn.peek();
+                if (first == second) {
+                    int newNumber = first + second;
+                    newColumn.add(newNumber);
+                    score += newNumber;
+                    thisColumn.pop();
+                } else {
+                    newColumn.add(first);
+                }
+            }
+            newColumn.addAll(thisColumn);
+            for (int j = 0; j < b.size(); j++) {
+                if (newColumn.isEmpty()) {
+                    Tile t = Tile.create(0, i, j);
+                    b.addTile(t);
+                } else {
+                    b.addTile(Tile.create(newColumn.pop(), i, j));
                 }
             }
         }
-        return false;
+
     }
+
+
+//    private boolean handleSingleColumn(Board b, int c) {
+//        Map<Integer, Tile> map = new HashMap<>();
+//        for (int r = b.size() - 1; r >= 0; r--) {
+//            if (b.tile(c, r) != null) {
+//                map.put(r, b.tile(c, r));
+//            }
+//        }
+//
+//        for (int r = 0; r < b.size(); r++) {
+//            if (map.keySet().contains(r)) {
+//                int tempRow = r;
+//                if (validCoordinate(b, c, tempRow + 1)) {
+//                    while (b.tile(c, tempRow + 1) == null
+//                        && tempRow + 1 < b.size()) {
+//                        tempRow++;
+//                    }
+//                    // Tile at (c, tempRow + 1) is not null when reach here
+//                    if (b.tile(c, tempRow + 1).value() == map.get(r).value()) {
+//                        b.move(c, tempRow + 1, map.get(r));
+//                        this.score += map.get(r).value();
+//                    } else {
+//                        b.move(c, tempRow, map.get(r));
+//                    }
+//                }
+//            }
+//        }
+//        return false;
+//    }
+
+//    private int nextValidRow(Board b, int c, int r) {
+//        int result = r;
+//        while (r + 1 < b.size()) {
+//            if (b.tile(c, r + 1) == null) {
+//                r++;
+//
+//            } else {
+//                if (b.tile(c, r + 1) != null
+//                    && b.tile(c, r + 1).value() == b.tile(c, r).value()) {
+//                    r++;
+//                }
+//            }
+//            result += 1;
+//        }
+//    }
 
 
     /** Checks if the game is over and sets the gameOver variable
