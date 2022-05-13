@@ -122,9 +122,23 @@ public class Model extends Observable {
         // changed local variable to true.
 
         // Handle the up direction move
-        for (int c = 0; c < board.size(); c++) {
-            handleSingleColumn(board);
-        }
+//        for (int c = 0; c < board.size(); c++) {
+//            handleSingleColumn(board);
+//        }
+
+//        for (int i = 0; i < board.size(); i++) {
+//            for (int j = 0; j < board.size(); j++) {
+//                Tile t = board.tile(i, j);
+//                if (board.tile(i, j) != null) {
+//                    if (!board.move(i, board.size(), t)) {
+//
+//                    }
+//                    score += 7;
+//                }
+//            }
+//        }
+        handleSingleColumn(board);
+
         changed = true;
         
         checkGameOver();
@@ -135,34 +149,33 @@ public class Model extends Observable {
     }
 
     private void handleSingleColumn(Board b) {
-        for (int i = 0; i < b.size(); i++) {
-            LinkedList<Integer> thisColumn = new LinkedList<>();
-            for (int j = 0; j < b.size(); j++) {
-                if (tile(i, j) != null) {
-                    thisColumn.add(tile(i, j).value());
+        for (int c = 0; c < b.size(); c++) {
+            LinkedList<Tile> thisColumn = new LinkedList<>();
+            for (int r = 0; r < b.size(); r++) {
+                if (tile(c, r) != null) {
+                    thisColumn.add(tile(c, r));
                 }
             }
-            LinkedList<Integer> newColumn = new LinkedList<>();
-            while (newColumn.size() >= 2) {
-                int first = newColumn.pop();
-                int second = newColumn.peek();
-                if (first == second) {
-                    int newNumber = first + second;
-                    newColumn.add(newNumber);
-                    score += newNumber;
+            int temp = 1;
+            while (thisColumn.size() >= 2) {
+                Tile first = thisColumn.pop();
+                Tile second = thisColumn.peek();
+                assert second != null;
+                if (first.value() == second.value()) {
+                    //TODO some problems here
+                    board.move(c, first.row(), second);
+                    board.move(c, (b.size() - temp), second);
+                    int newScore = first.value() + second.value();
+                    score += newScore;
                     thisColumn.pop();
                 } else {
-                    newColumn.add(first);
+                    thisColumn.pop();
+                    board.move(c, (b.size() - temp), first);
                 }
+                temp++;
             }
-            newColumn.addAll(thisColumn);
-            for (int j = 0; j < b.size(); j++) {
-                if (newColumn.isEmpty()) {
-                    Tile t = Tile.create(0, i, j);
-                    b.addTile(t);
-                } else {
-                    b.addTile(Tile.create(newColumn.pop(), i, j));
-                }
+            if (thisColumn.size() != 0) {
+                board.move(c, (b.size() - temp), thisColumn.get(0));
             }
         }
 

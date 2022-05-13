@@ -130,11 +130,11 @@ public class Board implements Iterable<Tile> {
             c = 0;
         }
 
-        public boolean hasNext() {
+        @Override public boolean hasNext() {
             return r < size();
         }
 
-        public Tile next() {
+        @Override public Tile next() {
             Tile t = tile(c, r);
             c = c + 1;
             if (c == size()) {
@@ -144,12 +144,12 @@ public class Board implements Iterable<Tile> {
             return t;
         }
 
-        public Iterator<Tile> iterator() {
+        @Override public Iterator<Tile> iterator() {
             return this;
         }
     }
 
-    public Iterator<Tile> iterator() {
+    @Override public Iterator<Tile> iterator() {
         return new AllTileIterator();
     }
 
