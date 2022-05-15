@@ -1,7 +1,5 @@
 package game2048;
 
-import edu.princeton.cs.algs4.In;
-
 import java.util.*;
 
 /** The state of a game of 2048.
@@ -16,6 +14,8 @@ public class Model extends Observable {
     private int maxScore;
     /** True iff game is ended. */
     private boolean gameOver;
+    /** The minimum size of the column to exit the loop. */
+    private final int  EDGE_SIZE = 2;
 
     /* Coordinate System: column C, row R of the board (where row 0,
      * column 0 is the lower-left corner of the board) will correspond
@@ -113,6 +113,152 @@ public class Model extends Observable {
      *    value, then the leading two tiles in the direction of motion merge,
      *    and the trailing tile does not.
      * */
+//    public boolean tilt(Side side) {
+//        boolean changed;
+//        changed = false;
+//
+//        // TODO: Modify this.board (and perhaps this.score) to account
+//        // for the tilt to the Side SIDE. If the board changed, set the
+//        // changed local variable to true.
+//
+//
+////        iterateColumnFromWestToEast(board);
+//
+//        changed = true;
+//
+//        checkGameOver();
+//        if (changed) {
+//            setChanged();
+//        }
+//        return changed;
+//    }
+
+//    private void handleSingleColumn(Board b) {
+//        for (int c = 0; c < b.size(); c++) {
+//            LinkedList<Tile> thisColumn = new LinkedList<>();
+//            for (int r = 0; r < b.size(); r++) {
+//                if (tile(c, r) != null) {
+//                    thisColumn.add(tile(c, r));
+//                }
+//            }
+//            int temp = 1;
+//            while (thisColumn.size() >= 2) {
+//                Tile first = thisColumn.pop();
+//                Tile second = thisColumn.peek();
+//                assert second != null;
+//                if (first.value() == second.value()) {
+//                    //TODO some problems here
+//                    for (int i = b.size() - 1; i >= 0; i--) {
+//                        if (b.tile(i, c) != null) {
+//                            b.tile(i, c) = null;
+//                        }
+//                    }
+//                    int newScore = first.value() + second.value();
+//                    score += newScore;
+//                    thisColumn.pop();
+//                } else {
+//                    thisColumn.pop();
+//                    board.move(c, (b.size() - temp), first);
+//                }
+//                temp++;
+//            }
+//            if (thisColumn.size() != 0) {
+//                board.move(c, (b.size() - temp), thisColumn.get(0));
+//            }
+//        }
+//
+//    }
+
+
+//    private void iterateColumnFromWestToEast(Board b) {
+//        ArrayList<LinkedList<Tile>> repo = new ArrayList<>();
+//        for (int c = 0; c < b.size(); c++) {
+//            LinkedList<Tile> thisColumn = new LinkedList<>();
+//            for (int r = 0; r < b.size(); r++) {
+//                if (tile(c, r) != null) {
+//                    thisColumn.add(tile(c, r));
+//                }
+//            }
+//            repo.add(thisColumn);
+//        }
+//        b.clear();
+//
+//        for (int c = 0; c < b.size(); c++) {
+//            LinkedList<Tile> tiles = repo.get(c);
+//            if (tiles.size() == 0) {
+//                continue;
+//            }
+//            while (tiles.size() >= EDGE_SIZE) {
+//                Tile first = tiles.pop();
+//                Tile second = tiles.peek();
+//                if (first.value() == second.value()) {
+//                    for (int r = b.size() - 1; r >= 0; r--) {
+//                        if (b.tile(c, r) == null) {
+//                            int newScore = first.value() + second.value();
+//                            Tile t = Tile.create(newScore, c, r);
+//                            b.addTile(t);
+//                            score += newScore;
+//                            tiles.pop();
+//                            break;
+//                        }
+//                    }
+//                } else {
+//                    for (int r = b.size() - 1; r >= 0; r--) {
+//                        if (b.tile(c, r) == null) {
+//                            Tile t = Tile.create(first.value(), c, r);
+//                            b.addTile(t);
+//                            break;
+//                        }
+//                    }
+//                }
+//            }
+//
+//            while (tiles.size() == 1) {
+//                for (int r = b.size() - 1; r >= 0; r--) {
+//                    if (b.tile(c, r) == null) {
+//                        Tile first = tiles.pop();
+//                        Tile t = Tile.create(first.value(), c, r);
+//                        b.addTile(t);
+//                        break;
+//                    }
+//                }
+//            }
+//        }
+//
+//    }
+//
+//    private void iterateColumnByMove(Board b) {
+//        for (int c = 0; c < b.size(); c++) {
+//            int currentSize = 0;
+//            for (int r = b.size() - 1; r >= 0; r--) {
+//                if (b.tile(c, r) != null) {
+//                    currentSize++;
+//                }
+//            }
+//
+//            int slow = b.size() - 1;
+//            int fast = b.size() - 1;
+//            while (fast >= 0) {
+//                if (b.tile(c, fast) != null) {
+//                    fast++;
+//                } else {
+//                    fast++;
+//                }
+//            }
+//        }
+//    }
+//
+//    private int nextValidRow(Board b, int c) {
+//        for (int r = b.size() - 1; r >= 0 ; r--) {
+//            if (b.tile(c, r) == null) {
+//                return r;
+//            }
+//        }
+//        return -1;
+//    }
+
+
+
     public boolean tilt(Side side) {
         boolean changed;
         changed = false;
@@ -121,26 +267,27 @@ public class Model extends Observable {
         // for the tilt to the Side SIDE. If the board changed, set the
         // changed local variable to true.
 
-        // Handle the up direction move
-//        for (int c = 0; c < board.size(); c++) {
-//            handleSingleColumn(board);
-//        }
+        board.setViewingPerspective(side);
 
-//        for (int i = 0; i < board.size(); i++) {
-//            for (int j = 0; j < board.size(); j++) {
-//                Tile t = board.tile(i, j);
-//                if (board.tile(i, j) != null) {
-//                    if (!board.move(i, board.size(), t)) {
-//
-//                    }
-//                    score += 7;
-//                }
-//            }
-//        }
-        handleSingleColumn(board);
+        boolean[][] isMerged = new boolean[board.size()][board.size()];
+        for (int row = board.size() - 2; row >= 0; row -= 1) {
+            for (int col = 0; col < board.size(); col += 1) {
+                Tile t = board.tile(col, row);
+                if (t == null) {
+                    continue;
+                }
+                if (moveTileUp(t, isMerged,side)) {
+                    changed = true;
+                }
+                //                if(board.tile(col,row)!=null){
+                //                    board.move(col,3,t);
+                //                    changed = true;
+                //                    score+=7;
+                //                }
+            }
+        }
+        board.setViewingPerspective(Side.NORTH);
 
-        changed = true;
-        
         checkGameOver();
         if (changed) {
             setChanged();
@@ -148,84 +295,56 @@ public class Model extends Observable {
         return changed;
     }
 
-    private void handleSingleColumn(Board b) {
-        for (int c = 0; c < b.size(); c++) {
-            LinkedList<Tile> thisColumn = new LinkedList<>();
-            for (int r = 0; r < b.size(); r++) {
-                if (tile(c, r) != null) {
-                    thisColumn.add(tile(c, r));
-                }
-            }
-            int temp = 1;
-            while (thisColumn.size() >= 2) {
-                Tile first = thisColumn.pop();
-                Tile second = thisColumn.peek();
-                assert second != null;
-                if (first.value() == second.value()) {
-                    //TODO some problems here
-                    board.move(c, first.row(), second);
-                    board.move(c, (b.size() - temp), second);
-                    int newScore = first.value() + second.value();
-                    score += newScore;
-                    thisColumn.pop();
-                } else {
-                    thisColumn.pop();
-                    board.move(c, (b.size() - temp), first);
-                }
-                temp++;
-            }
-            if (thisColumn.size() != 0) {
-                board.move(c, (b.size() - temp), thisColumn.get(0));
+    private boolean moveTileUp(Tile t, boolean[][] isMerged,Side s) {
+        int targetRow;
+        Tile nearest = findNearestTile(t,s);
+        if (nearest == null) {
+            targetRow = board.size() - 1;
+        } else if (nearest.value() == t.value() &&
+            !isMerged[col(nearest,s)][row(nearest,s)]) {
+            targetRow = row(nearest,s);
+        } else if (row(nearest,s) == row(t,s) + 1) {
+            return false;
+        } else {
+            targetRow = row(nearest,s) - 1;
+        }
+        isMerged[col(t,s)][targetRow] = board.move(col(t,s), targetRow, t);
+        if (isMerged[col(t,s)][targetRow]) {
+            score += t.value() * 2;
+        }
+        return true;
+    }
+
+    private Tile findNearestTile(Tile t,Side s) {
+        for (int row = row(t,s)+1; row < board.size(); row += 1) {
+            Tile current = board.tile(col(t,s), row);
+            if (current != null) {
+                return current;
             }
         }
+        return null;
+    }
 
+    /** Returns the side relative of side S. */
+    static Side relative(Side s) {
+        if (s == Side.NORTH) {
+            return Side.NORTH;
+        } else if (s == Side.SOUTH) {
+            return Side.SOUTH;
+        } else if (s == Side.EAST) {
+            return Side.WEST;
+        } else {
+            return Side.EAST;
+        }
     }
 
 
-//    private boolean handleSingleColumn(Board b, int c) {
-//        Map<Integer, Tile> map = new HashMap<>();
-//        for (int r = b.size() - 1; r >= 0; r--) {
-//            if (b.tile(c, r) != null) {
-//                map.put(r, b.tile(c, r));
-//            }
-//        }
-//
-//        for (int r = 0; r < b.size(); r++) {
-//            if (map.keySet().contains(r)) {
-//                int tempRow = r;
-//                if (validCoordinate(b, c, tempRow + 1)) {
-//                    while (b.tile(c, tempRow + 1) == null
-//                        && tempRow + 1 < b.size()) {
-//                        tempRow++;
-//                    }
-//                    // Tile at (c, tempRow + 1) is not null when reach here
-//                    if (b.tile(c, tempRow + 1).value() == map.get(r).value()) {
-//                        b.move(c, tempRow + 1, map.get(r));
-//                        this.score += map.get(r).value();
-//                    } else {
-//                        b.move(c, tempRow, map.get(r));
-//                    }
-//                }
-//            }
-//        }
-//        return false;
-//    }
-
-//    private int nextValidRow(Board b, int c, int r) {
-//        int result = r;
-//        while (r + 1 < b.size()) {
-//            if (b.tile(c, r + 1) == null) {
-//                r++;
-//
-//            } else {
-//                if (b.tile(c, r + 1) != null
-//                    && b.tile(c, r + 1).value() == b.tile(c, r).value()) {
-//                    r++;
-//                }
-//            }
-//            result += 1;
-//        }
-//    }
+    public int col(Tile t,Side s){
+        return Model.relative(s).col(t.col(),t.row(),board.size());
+    }
+    public int row(Tile t,Side s){
+        return Model.relative(s).row(t.col(),t.row(),board.size());
+    }
 
 
     /** Checks if the game is over and sets the gameOver variable
